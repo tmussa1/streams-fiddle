@@ -6,12 +6,8 @@
 import java.util.ArrayList;
 import java.util.function.Predicate;
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * Note: This class will report errors on opening.
- * That is because the TODOs are not complete statements
- * Your job is to complete them.
- */
 public class BeerFest {
     public  static class Beer {
 	public final String name;
@@ -36,7 +32,8 @@ public class BeerFest {
     }
     public static List<Beer> beerQuery(List<Beer> beerList, Predicate <Beer> predicate) {
         List<Beer> result = beerList.stream()
-	    // TODO:  Select Beer's that meet the predicate
+                .filter(predicate)
+                .collect(Collectors.toList());
         return result;
     }
     static List<Beer> loadCellar(){
@@ -53,19 +50,26 @@ public class BeerFest {
 
         return beerStock;
     }
-    static Predicate<Beer> priceRangeQuery(...) {
-	// TODO: compose and return a Predicate that will
-	//       express the selection criterion
+    static Predicate<Beer> priceRangeQuery(float startPrice, float endPrice) {
+        return new Predicate<Beer>() {
+            @Override
+            public boolean test(Beer beer) {
+                return beer.price >= startPrice && beer.price <= endPrice;
+            }
+        };
     }
-    static Predicate<Beer> countryQuery(...) {
-	// TODO: compose and return a Predicate that will
-	//       express the selection criterion
+    static Predicate<Beer> countryQuery(String country) {
+        return new Predicate<Beer>() {
+            @Override
+            public boolean test(Beer beer) {
+                return beer.country.equals(country);
+            }
+        };
     }
     public static void main(String argv[]) {
 	List<Beer> beerList = loadCellar();
-	// TODO: Call beerQuery with a predicate for selecting a country
-	beerQuery(beerList, countryQuery(...)).forEach(System.out::println);
-	// TODO: Call beerQuery with a predicate for a price range
-	beerQuery(beerList, priceRangeQuery(...)).forEach(System.out::println);
+	beerQuery(beerList, countryQuery("USA")).forEach(System.out::println);
+	System.out.println("========================================================");
+	beerQuery(beerList, priceRangeQuery(4f, 8f)).forEach(System.out::println);
     }
 }
