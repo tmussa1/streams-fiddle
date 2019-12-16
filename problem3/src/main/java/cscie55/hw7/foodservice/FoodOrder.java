@@ -102,8 +102,6 @@ public class FoodOrder implements Order {
         return Objects.hash(getOrderId(), getItems(), getAddress(), getPickupId());
     }
 
-
-
      /**
      * this method is intended for the consumer's use.
       * IOW, it should be called when the order arrives at its destination

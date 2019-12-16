@@ -42,7 +42,7 @@ public class FoodServiceTest {
     @Test
     public void verifyShopAndMenu(){
         assertNotNull(takeOutShop);
-        assertEquals(9, menu.size());
+        assertEquals(64, menu.size());
     }
 
 
@@ -56,7 +56,7 @@ public class FoodServiceTest {
     @Test
     public void testSetNewMenu(){
         // original size of menu
-        assertEquals(9, takeOutShop.getMenu().size());
+        assertEquals(64, takeOutShop.getMenu().size());
         List<Dish> random = getRandomOrder(15);
         takeOutShop.setNewMenu(random);
         assertEquals(15, takeOutShop.getMenu().size());
@@ -75,7 +75,7 @@ public class FoodServiceTest {
     @Test
     public void testPublishMenu(){
         // original size hard-coded menu has 9 items
-        assertEquals(9,takeOutShop.getMenu().size());
+        assertEquals(64,takeOutShop.getMenu().size());
         //new Dish(String name, boolean isVegetarian, int calories, Enum Dish.Type.[MEAT, FISH, OTHER]);
         List<Dish> newMenu = Arrays.asList(
                 new Dish("pork sirloin", false, 800, Dish.Type.MEAT),
@@ -101,7 +101,7 @@ public class FoodServiceTest {
 
     @Test
     public void testLoadExternalMenuFile(){
-        assertEquals(9,takeOutShop.getMenu().size());
+        assertEquals(64,takeOutShop.getMenu().size());
         MenuFileReader mfr = new MenuFileReader();
         List<Dish> importedMenu = mfr.read("menu.json");
         takeOutShop.setNewMenu(importedMenu);
@@ -142,7 +142,7 @@ public class FoodServiceTest {
                     new InputStreamReader(remoteDoc.openStream()));
             Dish[] menu = mapper.readValue(in, Dish[].class);
             in.close();
-            assertEquals(63,menu.length);
+            assertEquals(64,menu.length);
         }
         catch (MalformedURLException e) {
             e.printStackTrace();

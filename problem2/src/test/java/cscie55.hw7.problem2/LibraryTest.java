@@ -34,15 +34,17 @@ public class LibraryTest {
         assertNotNull(reader);
         assertNotNull(checkoutWriter);
         assertEquals(2518, checkouts.size());
-//        for(Checkout checkout : checkouts){
-//            System.out.println(checkout.getTitle());
-//        }
     }
 
     @Test
     public void testMostPopular() throws IOException {
         List<Checkout> mostPopular = library.getMostPopular(10);
         assertEquals(10, mostPopular.size());
+
+        /**
+         * This occurs 8 times and is most popular
+         */
+        assertTrue(mostPopular.get(0).getTitle().startsWith("Splendiferous Christmas"));
     }
 
     @Test

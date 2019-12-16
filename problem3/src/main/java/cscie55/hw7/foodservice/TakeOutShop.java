@@ -5,13 +5,12 @@ import cscie55.hw7.api.Slicer;
 import cscie55.hw7.impl.Address;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import cscie55.hw7.utils.NumUtil;
+import cscie55.hw7.reader.S3FileReader;
 import cscie55.hw7.writer.MenuWriter;
 
-public class TakeOutShop implements Shop<Dish> {
+public class TakeOutShop implements Shop<Dish>, Slicer{
 
 
     private List<Dish> menu = new ArrayList<>();
@@ -24,22 +23,14 @@ public class TakeOutShop implements Shop<Dish> {
     private static final int NUMBER_CHEFS_ON_STAFF = 10;
     private static final int DELIVERY_PERSONS_ON_STAFF = 7;
     private String[] names = {"James Beard", "Melissa Clark", "Gordon Ramsey", "Ayesha Curry", "Anthony Bourdain", "Julia Child", "Gaida De Laurentis", "Jamie Oliver", "Jiro Ono", "Alice Waters"};
-    // TODO: add a variable of Type 'Slicer' that sets the Parameter Types of your abstract 'Slicer' interface
-
+    S3FileReader fileReader = new S3FileReader();
+    Slicer slicer;
 
     /**
      * Constructor. Here we initialize the menu so we have something to sell
      */
     public TakeOutShop() {
-        // TODO: use Jackson methods to Read Dishes from Amazon S3 location in variable 'url'
-        // see testReadStreamToJson() in FoodServiceTest class for sample
-        //  populate the initial menu by converting the data returned into Dish[]
-        // replace below
-        Dish[] menuArray = {
-                new Dish("season fruit", true, 120, Dish.Type.OTHER),
-                new Dish("pizza", true, 550, Dish.Type.OTHER),
-                new Dish("prawns", false, 400, Dish.Type.FISH)
-        };
+        Dish[] menuArray =  fileReader.read("https://cscie-55-out.s3.amazonaws.com/menu7.json");
 
         /***** BELOW HERE THIS METHOD SHOULD REMAIN AS IS *******************/
         Arrays.stream(menuArray).forEach(menu::add);
@@ -64,18 +55,28 @@ public class TakeOutShop implements Shop<Dish> {
     }
 
     public List<Dish> getVegetatianMenu() {
-        //TODO: filter the menu items and return a subset consisting of only vegetarian dishes
-        return null;// TODO...remove null and return veggie menu
+        return menu.stream()
+                .filter(item -> item.isVegetarian())
+                .collect(Collectors.toList());
     }
 
     public Map<Boolean, List<Dish>> partitionByCalorieLimit(int calorie) {
-        // TODO: write a method that uses passed 'calorie' param to divide the menu.
-        //  The resulting map has 2 keys: true and false.
-        //  The List associated with the true key will contain all Dishes less than 'calorie'
-        // the list associated w/ false has those Dishes over the limit.
-        return null;
-    }
 
+        Map<Boolean, List<Dish>> calorieMap = new HashMap<>();
+
+        List<Dish> over = menu.stream()
+                .filter(item -> item.getCalories() >= calorie)
+                .collect(Collectors.toList());
+
+        List<Dish> under = menu.stream()
+                .filter(item -> item.getCalories() < calorie)
+                .collect(Collectors.toList());
+
+        calorieMap.put(true, under);
+        calorieMap.put(false, over);
+
+        return calorieMap;
+    }
 
     /**
      * @param dishes - List<Dish>
@@ -83,13 +84,11 @@ public class TakeOutShop implements Shop<Dish> {
      * @param end
      * @return - List<Dish>
      */
+    @Override
+    public List<Dish> slicer(List<Dish> dishes, int start, int end){
+        return dishes.subList(start, end);
+    }
 
-    //TODO: here implement public 'slicer' method
-	
-	
-	
-	
-	
     @Override
     public void setNewMenu(List<Dish> newMenu) {
         menu = newMenu;

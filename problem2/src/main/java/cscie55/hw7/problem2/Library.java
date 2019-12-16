@@ -1,8 +1,9 @@
 package cscie55.hw7.problem2;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -22,8 +23,36 @@ public class Library {
         return library;
     }
 
+    /**
+     * Using a multimap to find out the most frequented value.
+     * Also using a flatmap to flat out collection of objects
+     * @param limit
+     * @return
+     */
     public List<Checkout> getMostPopular(int limit){
-        return checkouts.stream()
+        Map<String, MostPopular> mostPopularMap = new HashMap<>();
+        Multimap<Integer, Checkout> checkoutMap = ArrayListMultimap.create();
+
+        checkouts.stream()
+                .forEach(checkout -> {
+                    MostPopular mostPopular = null;
+                    if (mostPopularMap.containsKey(checkout.getTitle())) {
+                        int count = mostPopularMap.get(checkout.getTitle()).getCount();
+                        mostPopular =  new MostPopular(checkout.getTitle(), count + 1);
+                        mostPopularMap.replace(checkout.getTitle(), mostPopular);
+                    } else{
+                        mostPopular = new MostPopular(checkout.getTitle(), 1);
+                        mostPopularMap.put(checkout.getTitle(), mostPopular);
+                    }
+                    checkoutMap.put(mostPopular.getCount(), checkout);
+                });
+
+        return checkoutMap.keys()
+                .stream()
+                .sorted(Comparator.reverseOrder())
+                .map(count -> checkoutMap.get(count))
+                .flatMap(Collection::stream)
+                .distinct()
                 .limit(limit)
                 .collect(Collectors.toList());
     }
@@ -50,6 +79,11 @@ public class Library {
         return checkouts;
     }
 
+    /**
+     * Predicate for filtering by author
+     * @param author
+     * @return
+     */
     public Predicate<Checkout> authorPredicate(String author){
         return new Predicate<Checkout>() {
             @Override
